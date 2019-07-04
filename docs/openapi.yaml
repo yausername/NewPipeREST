@@ -1,0 +1,860 @@
+openapi: 3.0.1
+info:
+  title: NewPipe REST
+  description: REST APIs for [NewPipeExtractor](https://github.com/TeamNewPipe/NewPipeExtractor),
+    the core that powers [NewPipe](https://github.com/TeamNewPipe/NewPipe) and several
+    other streaming applications.
+  version: 1.0.0
+externalDocs:
+  description: Find out more about NewPipe
+  url: https://github.com/TeamNewPipe/NewPipe
+servers:
+- url: http://localhost:4567/api/v1
+tags:
+- name: services
+  description: Services supported by NewPipe. Check [here](https://teamnewpipe.github.io/documentation/03_Implement_a_service/)
+    on how to add support for new services.
+- name: streams
+  description: Access streams under a service.
+- name: search
+  description: Search for streams, playlists, channels, etc. under a service.
+- name: playlists
+  description: Access playlists under a service.
+- name: channels
+  description: Access channels under a service.
+- name: kiosks
+  description: Access kiosks under a service.
+- name: comments
+  description: Access comments under a stream.
+paths:
+  /services:
+    get:
+      tags:
+      - services
+      summary: Get list of services
+      description: Get list of services
+      operationId: getListOfServices
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceList'
+  /streams:
+    get:
+      tags:
+      - streams
+      summary: Get stream by url
+      description: Get stream by url
+      operationId: getStreamByUrl
+      parameters:
+      - name: url
+        in: query
+        description: Url of stream
+        required: true
+        schema:
+          type: string
+          example: https://www.youtube.com/watch?v=zTxxlPGohz0
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StreamInfo'
+        400:
+          description: Unsupported url
+          content: {}
+  /playlists:
+    get:
+      tags:
+      - playlists
+      summary: Get playlist by url
+      description: Get playlist by url
+      operationId: getPlaylistByUrl
+      parameters:
+      - name: url
+        in: query
+        description: Url of playlist
+        schema:
+          type: string
+          example: https://www.youtube.com/playlist?list=PLYH8WvNV1YEk6pSuc9uiXSaUJ20Xspnzo
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaylistInfo'
+        400:
+          description: Unsupported url
+          content: {}
+  /playlists/page:
+    get:
+      tags:
+      - playlists
+      summary: Get more content under a playlist
+      description: Get more content under a playlist
+      operationId: getPlaylistPage
+      parameters:
+      - name: url
+        in: query
+        description: Url of playlist
+        schema:
+          type: string
+          example: https://www.youtube.com/playlist?list=PLYH8WvNV1YEk6pSuc9uiXSaUJ20Xspnzo
+        required: true
+      - name: pageUrl
+        in: query
+        description: pageUrl of playlist
+        schema:
+          type: string
+          example: https://www.youtube.com/browse_ajax?action_continuation=1&continuation=4qmFsgI0EiRWTFBMV3dBeXBBY0ZSZ0tBSUlGcUJyOW95LVpZWm5peGFfRmoaDGVnZFFWRHBEVFdkQw%253D%253D
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StreamInfoItemsPage'
+        400:
+          description: Unsupported url
+          content: {}
+  /channels:
+    get:
+      tags:
+      - channels
+      summary: Get channel by url
+      description: Get channel by url
+      operationId: getChannelByUrl
+      parameters:
+      - name: url
+        in: query
+        description: Url of channel
+        schema:
+          type: string
+          example: https://www.youtube.com/user/PewDiePie
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChannelInfo'
+        400:
+          description: Unsupported url
+          content: {}
+  /channels/page:
+    get:
+      tags:
+      - channels
+      summary: Get more content under a channel
+      description: Get more content under a channel
+      operationId: getChannelPage
+      parameters:
+      - name: url
+        in: query
+        description: Url of channel
+        schema:
+          type: string
+          example: https://www.youtube.com/user/PewDiePie
+        required: true
+      - name: pageUrl
+        in: query
+        description: pageUrl of channel
+        schema:
+          type: string
+          example: https://www.youtube.com/browse_ajax?action_continuation=1&continuation=4qmFsgJAEhhVQ3NYVmszN2JsdEh4RDFyRFB3dE5NOFEaJEVnWjJhV1JsYjNNWUF5QUFNQUk0QVhvQk1yZ0JBQSUzRCUzRA%253D%253D
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StreamInfoItemsPage'
+        400:
+          description: Unsupported url
+          content: {}
+  /search:
+    get:
+      tags:
+      - search
+      summary: Search under a service
+      description: Search under a service
+      operationId: searchUnderService
+      parameters:
+      - name: serviceId
+        in: query
+        description: Id of service
+        schema:
+          type: integer
+          format: int32
+          example: 0
+        required: true
+      - name: searchString
+        in: query
+        description: text to search
+        schema:
+          type: string
+          example: pewdiepie
+        required: true
+      - name: sortFilter
+        in: query
+        description: sortFilter
+        schema:
+          type: string
+      - name: contentFilters
+        in: query
+        description: contentFilters
+        schema:
+          type: array
+          items:
+            type: string
+        explode: false
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchInfo'
+        400:
+          description: invalid service id
+          content: {}
+  /search/page:
+    get:
+      tags:
+      - search
+      summary: Search more under a service
+      description: Search more under a service
+      operationId: searchMoreUnderService
+      parameters:
+      - name: serviceId
+        in: query
+        description: Id of service
+        schema:
+          type: integer
+          format: int32
+          example: 0
+        required: true
+      - name: searchString
+        in: query
+        description: text to search
+        schema:
+          type: string
+          example: pewdiepie
+        required: true
+      - name: pageUrl
+        in: query
+        description: pageUrl of search
+        schema:
+          type: string
+          example: https://www.youtube.com/browse_ajax?action_continuation=1&continuation=4qmFsgJAEhhVQ3NYVmszN2JsdEh4RDFyRFB3dE5NOFEaJEVnWjJhV1JsYjNNWUF5QUFNQUk0QVhvQk1yZ0JBQSUzRCUzRA%253D%253D
+        required: true
+      - name: sortFilter
+        in: query
+        description: sortFilter
+        schema:
+          type: string
+      - name: contentFilters
+        in: query
+        description: contentFilters
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchInfoItemsPage'
+        400:
+          description: invalid service id
+          content: {}
+  /comments:
+    get:
+      tags:
+      - comments
+      summary: Get comments by stream url
+      description: Get comments by stream url
+      operationId: getCommentsByUrl
+      parameters:
+      - name: url
+        in: query
+        description: Url of stream
+        required: true
+        schema:
+          type: string
+          example: https://www.youtube.com/watch?v=zTxxlPGohz0
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentsInfo'
+        400:
+          description: Unsupported url
+          content: {}
+  /comments/page:
+    get:
+      tags:
+      - comments
+      summary: Get more comments under a stream
+      description: Get more comments under a stream
+      operationId: getCommentsPage
+      parameters:
+      - name: url
+        in: query
+        description: Url of stream
+        required: true
+        schema:
+          type: string
+          example: https://www.youtube.com/watch?v=zTxxlPGohz0
+      - name: pageUrl
+        in: query
+        description: pageUrl of comments
+        required: true
+        schema:
+          type: string
+          example: https://www.youtube.com/browse_ajax?action_continuation=1&continuation=4qmFsgJAEhhVQ3NYVmszN2JsdEh4RDFyRFB3dE5NOFEaJEVnWjJhV1JsYjNNWUF5QUFNQUk0QVhvQk1yZ0JBQSUzRCUzRA%253D%253D
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentsInfoItemsPage'
+        400:
+          description: Unsupported url
+          content: {}
+  /kiosks:
+    get:
+      tags:
+      - kiosks
+      summary: Get list of kiosk ids for a service
+      description: Get list of kiosk ids for a service
+      operationId: getKioskIdsByService
+      parameters:
+      - name: serviceId
+        in: query
+        description: service Id
+        required: true
+        schema:
+          type: integer
+          format: int32
+          example: 0
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                example:
+                  - "Trending"
+                  - "New & hot"
+                  - "Top 50"
+        400:
+          description: invalid service id
+          content: {}
+  /kiosks/{kioskId}:
+    get:
+      tags:
+      - kiosks
+      summary: Get kiosk by id
+      description: Get kiosk by id
+      operationId: getKioskById
+      parameters:
+      - name: serviceId
+        in: query
+        description: service Id
+        required: true
+        schema:
+          type: integer
+          format: int32
+          example: 0
+      - name: kioskId
+        in: path
+        description: kiosk Id
+        required: true
+        schema:
+          type: string
+          example: Trending
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KioskInfo'
+        400:
+          description: invalid service id
+          content: {}
+  /kiosks/{kioskId}/page:
+    get:
+      tags:
+      - kiosks
+      summary: Get more items under this kiosk
+      description: Get more items under this kiosk
+      operationId: getKioskPage
+      parameters:
+      - name: serviceId
+        in: query
+        description: service Id
+        required: true
+        schema:
+          type: integer
+          format: int32
+          example: 0
+      - name: kioskId
+        in: path
+        description: kiosk Id
+        required: true
+        schema:
+          type: string
+          example: Trending
+      - name: pageUrl
+        in: query
+        description: pageUrl of kiosk
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StreamInfoItemsPage'
+        400:
+          description: invalid service id
+          content: {}
+          
+components:
+  schemas:
+    Service:
+      type: object
+      properties:
+        serviceId:
+          type: integer
+          format: int32
+        serviceInfo:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Name of service
+              example: YouTube
+            mediaCapabilities:
+              type: array
+              example:
+              - AUDIO
+              - VIDEO
+              - LIVE
+              - COMMENTS
+              items:
+                type: string
+                enum:
+                - AUDIO
+                - VIDEO
+                - LIVE
+                - COMMENTS
+    ServiceList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Service'
+    Info:
+      type: object
+      properties:
+        serviceId:
+          type: integer
+          format: int32
+        id:
+          type: string
+        url:
+          type: string
+        originalUrl:
+          type: string
+        name:
+          type: string
+        errors:
+          type: array
+          items:
+            type: string
+    InfoType:
+      type: string
+      enum:
+        - STREAM
+        - PLAYLIST
+        - CHANNEL
+        - COMMENT
+    InfoItem:
+      type: object
+      properties:
+        infoType:
+          $ref: '#/components/schemas/InfoType'
+        serviceId:
+          type: integer
+          format: int32
+        url:
+          type: string
+        name:
+          type: string
+        thumbnailUrl:
+          type: string
+    MediaFormat:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+          example: MPEG-4
+        suffix:
+          type: string
+          example: mp4
+        mimeType:
+          type: string
+          example: video/mp4
+    Stream:
+      type: object
+      properties:
+        mediaFormat:
+          $ref: '#/components/schemas/MediaFormat'
+        url:
+          type: string
+          example: https://www.youtube.com/watch?v=zTxxlPGohz0
+        format:
+          type: integer
+          format: int32
+          deprecated: true
+    AudioStream:
+      allOf:
+      - $ref: '#/components/schemas/Stream'
+      - type: object
+        properties:
+          average_bitrate:
+            type: integer
+            format: int32
+            example: 128
+    VideoStream:
+      allOf:
+      - $ref: '#/components/schemas/Stream'
+      - type: object
+        properties:
+          resolution:
+            type: string
+            example: 1080p
+          isVideoOnly:
+            type: boolean
+            example: false
+    SubtitlesStream:
+      allOf:
+      - $ref: '#/components/schemas/Stream'
+      - type: object
+        properties:
+          locale:
+            type: string
+          autoGenerated:
+            type: boolean
+          code:
+            type: string
+    StreamType:
+      type: string
+      enum:
+        - NONE
+        - VIDEO_STREAM
+        - AUDIO_STREAM
+        - LIVE_STREAM
+        - AUDIO_LIVE_STREAM
+        - FILE
+    StreamInfoItem:
+      allOf:
+      - $ref: '#/components/schemas/InfoItem'
+      - type: object
+        properties:
+          streamType:
+            $ref: '#/components/schemas/StreamType'
+          uploaderName:
+            type: string
+          uploadDate:
+            type: string
+          viewCount:
+            type: integer
+            format: int64
+          duration:
+            type: integer
+            format: int64
+          uploaderUrl:
+            type: string
+    ChannelInfoItem:
+      allOf:
+      - $ref: '#/components/schemas/InfoItem'
+      - type: object
+        properties:
+          description:
+            type: string
+          subscriberCount:
+            type: integer
+            format: int64
+          streamCount:
+            type: integer
+            format: int64
+    PlaylistInfoItem:
+      allOf:
+      - $ref: '#/components/schemas/InfoItem'
+      - type: object
+        properties:
+          uploaderName:
+            type: string
+          streamCount:
+            type: integer
+            format: int64
+    CommentsInfoItem:
+      allOf:
+      - $ref: '#/components/schemas/InfoItem'
+      - type: object
+        properties:
+          commentId:
+            type: string
+          commentText:
+            type: string
+          authorName:
+            type: string
+          authorThumbnail:
+            type: string
+          authorEndpoint:
+            type: string
+          publishedTime:
+            type: string
+          likeCount:
+            type: integer
+            format: int64
+    StreamInfo:
+      allOf:
+      - $ref: '#/components/schemas/Info'
+      - type: object
+        properties:
+          streamType:
+            $ref: '#/components/schemas/StreamType'
+          thumbnailUrl:
+            type: string
+          uploadDate:
+            type: string
+          duration:
+            type: integer
+            format: int64
+          ageLimit:
+            type: integer
+            format: int32
+          description:
+            type: string
+          viewCount:
+            type: integer
+            format: int64
+          likeCount:
+            type: integer
+            format: int64
+          dislikeCount:
+            type: integer
+            format: int64
+          uploaderName:
+            type: string
+          uploaderUrl:
+            type: string
+          uploaderAvatarUrl:
+            type: string
+          videoStreams:
+            type: array
+            items:
+              $ref: '#/components/schemas/VideoStream'
+          audioStreams:
+            type: array
+            items:
+              $ref: '#/components/schemas/AudioStream'
+          videoOnlyStreams:
+            type: array
+            items:
+              $ref: '#/components/schemas/VideoStream'
+          dashMpdUrl:
+            type: string
+          segmentedVideoStreams:
+            type: array
+            items:
+              $ref: '#/components/schemas/VideoStream'
+          segmentedAudioStreams:
+            type: array
+            items:
+              $ref: '#/components/schemas/AudioStream'
+          segmentedVideoOnlyStreams:
+            type: array
+            items:
+              $ref: '#/components/schemas/VideoStream'
+          hlsUrl:
+            type: string
+          nextVideo:
+            $ref: '#/components/schemas/StreamInfoItem'
+          relatedStreams:
+            type: array
+            items:
+              $ref: '#/components/schemas/StreamInfoItem'
+          startPosition:
+            type: integer
+            format: int64
+          subtitles:
+            type: array
+            items:
+              $ref: '#/components/schemas/SubtitlesStream'
+    ListInfo:
+      allOf:
+      - $ref: '#/components/schemas/Info'
+      - type: object
+        properties:
+          nextPageUrl:
+            type: string
+          contentFilters:
+            type: array
+            items:
+              type: string
+          sortFilter:
+            type: string
+    PlaylistInfo:
+      allOf:
+      - $ref: '#/components/schemas/ListInfo'
+      - type: object
+        properties:
+          thumbnailUrl:
+            type: string
+          bannerUrl:
+            type: string
+          uploaderUrl:
+            type: string
+          uploaderAvatarUrl:
+            type: string
+          streamCount:
+            type: integer
+            format: int64
+          relatedItems:
+            type: array
+            items:
+              $ref: '#/components/schemas/StreamInfoItem'
+    ChannelInfo:
+      allOf:
+      - $ref: '#/components/schemas/ListInfo'
+      - type: object
+        properties:
+          avatarUrl:
+            type: string
+          bannerUrl:
+            type: string
+          feedUrl:
+            type: string
+          subscriberCount:
+            type: integer
+            format: int64
+          description:
+            type: string
+          donationLinks:
+            type: array
+            items:
+              type: string
+          relatedItems:
+            type: array
+            items:
+              $ref: '#/components/schemas/StreamInfoItem'
+    SearchInfo:
+      allOf:
+      - $ref: '#/components/schemas/ListInfo'
+      - type: object
+        properties:
+          searchString:
+            type: string
+          searchSuggestion:
+            type: string
+          relatedItems:
+            type: array
+            items:
+              anyOf:
+                - $ref: '#/components/schemas/StreamInfoItem'
+                - $ref: '#/components/schemas/PlaylistInfoItem'
+                - $ref: '#/components/schemas/ChannelInfoItem'
+              discriminator:
+                propertyName: infoType
+                mapping:
+                  STREAM: '#/components/schemas/StreamInfoItem'
+                  PLAYLIST: '#/components/schemas/PlaylistInfoItem'
+                  CHANNEL: '#/components/schemas/ChannelInfoItem'
+    CommentsInfo:
+      allOf:
+      - $ref: '#/components/schemas/ListInfo'
+      - type: object
+        properties:
+          relatedItems:
+            type: array
+            items:
+              $ref: '#/components/schemas/CommentsInfoItem'
+    KioskInfo:
+      allOf:
+      - $ref: '#/components/schemas/ListInfo'
+      - type: object
+        properties:
+          relatedItems:
+            type: array
+            items:
+              $ref: '#/components/schemas/StreamInfoItem'
+    InfoItemsPage:
+      type: object
+      properties:
+        nextPageUrl:
+          type: string
+        errors:
+          type: array
+          items:
+            type: string
+    StreamInfoItemsPage:
+      allOf:
+      - $ref: '#/components/schemas/InfoItemsPage'
+      - type: object
+        properties:
+          itemsList:
+            type: array
+            items:
+              $ref: '#/components/schemas/StreamInfoItem'
+    CommentsInfoItemsPage:
+      allOf:
+      - $ref: '#/components/schemas/InfoItemsPage'
+      - type: object
+        properties:
+          itemsList:
+            type: array
+            items:
+              $ref: '#/components/schemas/CommentsInfoItem'
+    SearchInfoItemsPage:
+      allOf:
+      - $ref: '#/components/schemas/InfoItemsPage'
+      - type: object
+        properties:
+          itemsList:
+            type: array
+            items:
+              anyOf:
+                - $ref: '#/components/schemas/StreamInfoItem'
+                - $ref: '#/components/schemas/PlaylistInfoItem'
+                - $ref: '#/components/schemas/ChannelInfoItem'
+              discriminator:
+                propertyName: infoType
+                mapping:
+                  STREAM: '#/components/schemas/StreamInfoItem'
+                  PLAYLIST: '#/components/schemas/PlaylistInfoItem'
+                  CHANNEL: '#/components/schemas/ChannelInfoItem'
