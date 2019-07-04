@@ -9,7 +9,7 @@ externalDocs:
   description: Find out more about NewPipe
   url: https://github.com/TeamNewPipe/NewPipe
 servers:
-- url: http://localhost:4567/api/v1
+- url: https://newpipe-rest.herokuapp.com/api/v1
 tags:
 - name: services
   description: Services supported by NewPipe. Check [here](https://teamnewpipe.github.io/documentation/03_Implement_a_service/)
