@@ -3,3 +3,8 @@ REST APIs for [NewPipeExtractor](https://github.com/TeamNewPipe/NewPipeExtractor
 
 * Swagger UI (Documentation) - https://app.swaggerhub.com/apis-docs/yayausername/new-pipe_rest/1.0.0
 * OpenAPI spec - https://github.com/yausername/NewPipeREST/blob/master/docs/openapi.yaml
+
+## Build Steps
+  
+* ./gradlew clean jar
+* java -jar ./build/libs/NewPipeREST.jar
