@@ -16,11 +16,11 @@ import org.schabi.newpipe.extractor.comments.CommentsInfoItem;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
 import org.schabi.newpipe.extractor.kiosk.KioskInfo;
+import org.schabi.newpipe.extractor.localization.Localization;
 import org.schabi.newpipe.extractor.playlist.PlaylistInfo;
 import org.schabi.newpipe.extractor.search.SearchInfo;
 import org.schabi.newpipe.extractor.stream.StreamInfo;
 import org.schabi.newpipe.extractor.stream.StreamInfoItem;
-import org.schabi.newpipe.extractor.utils.Localization;
 
 import com.google.gson.Gson;
 
@@ -29,7 +29,7 @@ public class RestService {
     private Gson gson = new Gson();
     
     public RestService() {
-        Downloader d = Downloader.init(null);
+        DownloaderImpl d = DownloaderImpl.init(null);
         NewPipe.init(d, new Localization("en", "GB"));
     }
     

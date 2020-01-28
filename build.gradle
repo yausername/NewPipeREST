@@ -22,7 +22,7 @@ ext {
 }
 
 dependencies {
-    implementation 'com.github.yausername:NewPipeExtractor:58ae3a57518'
+    implementation 'com.github.yausername:NewPipeExtractor:rest-api-SNAPSHOT'
     implementation 'com.sparkjava:spark-core:2.9.0'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation "com.squareup.okhttp3:okhttp:${okHttpLibVersion}"
